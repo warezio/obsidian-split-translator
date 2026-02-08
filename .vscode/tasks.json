@@ -2,10 +2,31 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "kill-obsidian",
+            "type": "shell",
+            "command": "pkill -f Obsidian || true",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            }
+        },
+        {
             "label": "build:debug",
             "type": "shell",
-            "command": "bun run build:debug",
+            "command": "node esbuild.config.mjs --debug",
             "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "kill-and-build",
+            "dependsOn": [
+                "kill-obsidian",
+                "build:debug"
+            ],
+            "dependsOrder": "sequence",
             "presentation": {
                 "reveal": "silent",
                 "panel": "shared"
@@ -14,7 +35,7 @@
         {
             "label": "dev",
             "type": "shell",
-            "command": "bun run dev",
+            "command": "node esbuild.config.mjs --watch --debug",
             "isBackground": true,
             "group": {
                 "kind": "build",

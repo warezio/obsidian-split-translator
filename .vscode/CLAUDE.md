@@ -7,6 +7,10 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #706 | 7:18 PM | ✅ | Pre-Launch Task Changed to Kill and Build | ~228 |
+| #705 | " | 🔴 | Simplified Debug Configuration Removed Path Overrides | ~262 |
+| #704 | 7:17 PM | 🟣 | Build Tasks Enhanced with Process Management | ~279 |
+| #703 | 7:15 PM | 🔴 | Auto-Cleanup Obsidian Process Before Debugging | ~203 |
 | #702 | 7:01 PM | 🔴 | Debug Configuration Simplified | ~281 |
 | #674 | 5:32 PM | 🔴 | Debug Configuration Enhanced for Source Map Resolution | ~308 |
 </claude-mem-context>
