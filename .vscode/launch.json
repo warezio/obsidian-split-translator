@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Obsidian Plugin",
+            "type": "chrome",
+            "request": "launch",
+            "runtimeExecutable": "/Applications/Obsidian.app/Contents/MacOS/Obsidian",
+            "runtimeArgs": [
+                "--remote-debugging-port=9222"
+            ],
+            "urlFilter": "app://obsidian.md/*",
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}",
+            "resolveSourceMapLocations": null,
+            "preLaunchTask": "build:debug",
+            "timeout": 30000,
+            "trace": true
+        },
+        {
+            "name": "Attach to Obsidian",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "urlFilter": "app://obsidian.md/*",
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}",
+            "resolveSourceMapLocations": null,
+            "timeout": 30000,
+            "trace": true
+        }
+    ]
+}

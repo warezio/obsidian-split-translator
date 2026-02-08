@@ -1,0 +1,15 @@
+/* Translation View Styles */
+
+.translator-content {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+    padding: 20px 20px 0;
+    overflow-y: auto;
+}
+
+/* Ensure child elements are also selectable */
+.translator-content * {
+    user-select: text;
+    -webkit-user-select: text;
+}

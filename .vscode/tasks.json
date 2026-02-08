@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build:debug",
+            "type": "shell",
+            "command": "bun run build:debug",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "dev",
+            "type": "shell",
+            "command": "bun run dev",
+            "isBackground": true,
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^> (.+):(\\d+):(\\d+): (error|warning): (.+)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^\\[watch\\]",
+                    "endsPattern": "^\\[watch\\]"
+                }
+            }
+        }
+    ]
+}

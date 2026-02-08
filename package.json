@@ -1,0 +1,28 @@
+{
+    "name": "obsidian-split-translator",
+    "version": "1.0.0",
+    "description": "Translate Obsidian notes using Google Translate (unofficial)",
+    "main": "main.js",
+    "scripts": {
+        "dev": "node esbuild.config.mjs --watch --debug",
+        "build": "node esbuild.config.mjs",
+        "build:debug": "node esbuild.config.mjs --debug"
+    },
+    "keywords": [
+        "obsidian",
+        "plugin",
+        "translation",
+        "translate",
+        "google-translate"
+    ],
+    "author": "Jiho",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "builtin-modules": "^3.3.0",
+        "esbuild": "^0.27.0",
+        "obsidian": "latest",
+        "tslib": "^2.6.0",
+        "typescript": "^5.3.0"
+    }
+}
