@@ -6,7 +6,7 @@ const isWatch = process.argv.includes("--watch");
 const isDebug = process.argv.includes("--debug");
 
 const config = {
-    entryPoints: ["main.ts"],
+    entryPoints: ["src/main.ts"],
     bundle: true,
     outfile: "main.js",
     format: "cjs",

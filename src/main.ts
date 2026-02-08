@@ -14,7 +14,6 @@ export default class SplitTranslatorPlugin extends Plugin {
     };
 
     async onload() {
-        console.log("Split Translator Plugin loaded");
         await this.loadSettings();
         this.addSettingTab(new TranslatorSettingTab(this.app, this));
 
@@ -29,7 +28,6 @@ export default class SplitTranslatorPlugin extends Plugin {
             name: "Translate current note",
             checkCallback: (checking) => {
                 if (checking) return this.isEditorActive();
-                console.log("Command: Translate current note triggered");
                 this.translateCurrentNote();
                 return true;
             },
@@ -48,9 +46,9 @@ export default class SplitTranslatorPlugin extends Plugin {
         });
 
         // Add ribbon icon
-        this.addRibbonIcon("languages", "Translate current note", () => {
-            this.translateCurrentNote();
-        });
+        // this.addRibbonIcon("languages", "Translate current note", () => {
+        //     this.translateCurrentNote();
+        // });
 
         // Add header button to existing leaves
         this.app.workspace.onLayoutReady(() => {
@@ -119,7 +117,6 @@ export default class SplitTranslatorPlugin extends Plugin {
     }
 
     async translateContent(text: string) {
-        console.log("translateContent started, length:", text.length);
         try {
             // 1. Open view immediately with loading state
             const view = await this.openTranslationView(""); 
@@ -161,16 +158,12 @@ export default class SplitTranslatorPlugin extends Plugin {
             chunks.push(currentChunk);
         }
 
-        console.log(`Starting streaming translation of ${chunks.length} chunks`);
-        
         // Show initial loading state
         view.showLoading(true);
         let accumulatedTranslation = "";
 
         try {
             for (let i = 0; i < chunks.length; i++) {
-                console.log(`Processing chunk ${i + 1}/${chunks.length}`);
-                
                 // Translate chunk
                 let chunkResult = await this.callGoogleTranslate(chunks[i]);
                 
@@ -194,7 +187,6 @@ export default class SplitTranslatorPlugin extends Plugin {
             view.showLoading(false);
         }
 
-        console.log("All chunks translated and streamed");
     }
 
 
@@ -255,7 +247,6 @@ export default class SplitTranslatorPlugin extends Plugin {
     }
 
     async callGoogleTranslate(text: string): Promise<string> {
-        console.log("Calling Google API with text length:", text.length);
         const encodedText = encodeURIComponent(text);
         const source = this.config.sourceLang;
         const target = this.config.targetLang;
@@ -313,7 +304,6 @@ export default class SplitTranslatorPlugin extends Plugin {
     }
 
     onunload() {
-        console.log("Translator Plugin unloaded");
     }
 }
 

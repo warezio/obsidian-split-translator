@@ -5,7 +5,7 @@
 echo "🔨 Building..."
 
 # Bundle with esbuild
-npx esbuild main.ts --bundle --outfile=main.js --format=cjs --external:obsidian
+npx esbuild src/main.ts --bundle --outfile=main.js --format=cjs --external:obsidian
 
 # Create styles.css (empty)
 echo "" > styles.css

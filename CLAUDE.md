@@ -30,10 +30,10 @@ This is an **Obsidian plugin** that translates notes using Google Translate's un
 
 ### Source Files
 
-- **main.ts** — Plugin class (`SplitTranslatorPlugin`). Registers two commands ("Translate current note", "Translate selection"), a ribbon icon, and per-leaf header buttons. Contains the translation pipeline: text → `MarkdownMasker` (protects code blocks/inline code with placeholders) → chunk splitting (5000 char limit) → sequential Google Translate API calls → unmask → stream results to view.
-- **view.ts** — `TranslationView` extends `ItemView`. Opens as a vertical split pane. Renders translated markdown via `MarkdownRenderer.render()`. Handles loading spinner state.
-- **settings.ts** — `TranslatorSettingTab` for source language (auto/en/ko/ja/zh) and target language selection. Config stored via Obsidian's `loadData`/`saveData`.
-- **styles.css** — Minimal styles for the translation content area (text selectability, padding).
+- **src/main.ts** — Plugin class (`SplitTranslatorPlugin`). Registers two commands ("Translate current note", "Translate selection"), a ribbon icon, and per-leaf header buttons. Contains the translation pipeline: text → `MarkdownMasker` (protects code blocks/inline code with placeholders) → chunk splitting (5000 char limit) → sequential Google Translate API calls → unmask → stream results to view.
+- **src/view.ts** — `TranslationView` extends `ItemView`. Opens as a vertical split pane. Renders translated markdown via `MarkdownRenderer.render()`. Handles loading spinner state.
+- **src/settings.ts** — `TranslatorSettingTab` for source language (auto/en/ko/ja/zh) and target language selection. Config stored via Obsidian's `loadData`/`saveData`.
+- **src/styles.css** — Minimal styles for the translation content area (text selectability, padding).
 
 ### Key Patterns
 
@@ -48,4 +48,4 @@ This is an **Obsidian plugin** that translates notes using Google Translate's un
 - Entry point must export a default class extending `Plugin`.
 - `manifest.json` defines plugin metadata (id: `obsidian-split-translator`, min app version: 1.5.0).
 - `obsidian` package is always external in the bundle — it's provided by the host app at runtime.
-- `tsconfig.json` only includes `main.ts`; other `.ts` files are resolved via imports.
+- `tsconfig.json` only includes `src/main.ts`; other `.ts` files are resolved via imports.
