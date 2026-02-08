@@ -5,7 +5,7 @@
     "minAppVersion": "1.5.0",
     "description": "Translates notes in a split pane, displaying the original and translated text side-by-side for easy comparison.",
     "main": "main.js",
-    "author": "Jiho Lee",
+    "author": "warezio",
     "authorUrl": "https://github.com/warezio",
     "isDesktopOnly": false
 }
