@@ -3,7 +3,7 @@
     "name": "Split Translator",
     "version": "1.0.0",
     "minAppVersion": "1.5.0",
-    "description": "Translate notes in a split pane for easy side-by-side comparison with the original. Note\uc758 \ub0b4\uc6a9\uc744 \uc2a4\ud50c\ub9bf \ucc3d\uc5d0\uc11c \ubc88\uc5ed\ud558\uc5ec \uc6d0\ubb38\uacfc \uc27d\uac8c \ube44\uad50\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+    "description": "Translates notes in a split pane, displaying the original and translated text side-by-side for easy comparison.",
     "main": "main.js",
     "author": "Jiho Lee",
     "authorUrl": "https://github.com/warezio",
