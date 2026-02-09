@@ -225,9 +225,13 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
   }
   addHeaderButton(view) {
     if (view.containerEl.querySelector(".translator-header-button")) return;
-    const button = view.addAction("languages", "Translate current note", () => {
-      this.translateCurrentNote();
-    });
+    const button = view.addAction(
+      "languages",
+      "Translate current note",
+      () => {
+        this.translateCurrentNote();
+      }
+    );
     button.addClass("translator-header-button");
   }
   async translateCurrentNote() {
@@ -307,22 +311,35 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
               }
             }
             if (unchangedWords > 5 && attempt < retries - 1) {
-              throw new Error(`Translation may have failed (too much original text preserved)`);
+              throw new Error(
+                `Translation may have failed (too much original text preserved)`
+              );
             }
             break;
           } catch (error) {
             lastError = error;
-            console.warn(`Translation attempt ${attempt + 1} failed for chunk ${i + 1}/${chunks.length}:`, error);
+            console.warn(
+              `Translation attempt ${attempt + 1} failed for chunk ${i + 1}/${chunks.length}:`,
+              error
+            );
             if (attempt < retries - 1) {
-              await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1e3));
+              await new Promise(
+                (resolve) => setTimeout(
+                  resolve,
+                  Math.pow(2, attempt) * 1e3
+                )
+              );
             } else {
-              console.error(`All translation attempts failed for chunk ${i + 1}, using original text`);
+              console.error(
+                `All translation attempts failed for chunk ${i + 1}, using original text`
+              );
               chunkResult = chunk;
             }
           }
         }
         chunkResult = masker.unmask(chunkResult);
-        if (accumulatedTranslation.length > 0) accumulatedTranslation += "\n\n";
+        if (accumulatedTranslation.length > 0)
+          accumulatedTranslation += "\n\n";
         accumulatedTranslation += chunkResult;
         view.update(accumulatedTranslation);
       }
@@ -354,7 +371,9 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
   syncScroll(targetView) {
     const activeView = this.app.workspace.getActiveViewOfType(import_obsidian3.MarkdownView);
     if (!activeView) return;
-    const editorScrollDom = activeView.contentEl.querySelector(".cm-scroller");
+    const editorScrollDom = activeView.contentEl.querySelector(
+      ".cm-scroller"
+    );
     const targetScrollDom = targetView.contentEl;
     if (editorScrollDom && targetScrollDom) {
       const handleScroll = () => {
@@ -381,7 +400,9 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
         }
       });
       if (response.status !== 200) {
-        throw new Error(`Google API returned status ${response.status}`);
+        throw new Error(
+          `Google API returned status ${response.status}`
+        );
       }
       const data = response.json;
       if (Array.isArray(data) && Array.isArray(data[0])) {
@@ -432,12 +453,15 @@ var MarkdownMasker = class {
     return text;
   }
   unmask(text) {
-    return text.replace(/__(CODE_BLOCK|INLINE_CODE)_(\d+)__/g, (match, type, index) => {
-      const idx = parseInt(index);
-      if (idx >= 0 && idx < this.replacements.length) {
-        return this.replacements[idx];
+    return text.replace(
+      /__(CODE_BLOCK|INLINE_CODE)_(\d+)__/g,
+      (match, type, index) => {
+        const idx = parseInt(index);
+        if (idx >= 0 && idx < this.replacements.length) {
+          return this.replacements[idx];
+        }
+        return match;
       }
-      return match;
-    });
+    );
   }
 };
