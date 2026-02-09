@@ -1,15 +1,49 @@
 /* Translation View Styles */
 
-.translator-content {
-    user-select: text;
-    -webkit-user-select: text;
-    cursor: text;
-    padding: 20px 20px 0;
+/* Target the translator view's content area */
+.workspace-leaf[data-type="translator-view"] .view-content {
+    padding: max(var(--safe-area-inset-bottom), var(--size-4-8)) !important;
+}
+
+/* Make the view container look like Obsidian's markdown preview */
+.workspace-leaf[data-type="translator-view"] .markdown-preview-view {
     overflow-y: auto;
 }
 
-/* Ensure child elements are also selectable */
-.translator-content * {
-    user-select: text;
-    -webkit-user-select: text;
+/* Ensure translator content has proper padding and styling */
+.workspace-leaf[data-type="translator-view"] .markdown-preview-sizer {
+    padding-bottom: 606px;
+    min-height: 0;
+}
+
+/* Pusher element for proper markdown rendering */
+.workspace-leaf[data-type="translator-view"] .markdown-preview-pusher {
+    width: 1px;
+    height: 0.1px;
+    margin-bottom: 0px;
+}
+
+/* Loading state styles */
+.translator-loading {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+.translator-loading .spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: translator-spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes translator-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

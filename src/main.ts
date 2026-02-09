@@ -133,8 +133,8 @@ export default class SplitTranslatorPlugin extends Plugin {
     }
 
     async streamTranslation(text: string, view: TranslationView) {
-        const CHUNK_SIZE = 5000;
-        
+        const CHUNK_SIZE = 3000; // Reduced from 5000 for more reliable translation
+
         // 1. Mask code blocks before splitting
         const masker = new MarkdownMasker();
         const maskedText = masker.mask(text);
@@ -164,16 +164,54 @@ export default class SplitTranslatorPlugin extends Plugin {
 
         try {
             for (let i = 0; i < chunks.length; i++) {
-                // Translate chunk
-                let chunkResult = await this.callGoogleTranslate(chunks[i]);
-                
+                const chunk = chunks[i];
+
+                // Translate chunk with retry logic
+                let chunkResult = "";
+                let retries = 3;
+                let lastError: Error | null = null;
+
+                for (let attempt = 0; attempt < retries; attempt++) {
+                    try {
+                        chunkResult = await this.callGoogleTranslate(chunk);
+
+                        // Validate that we got a meaningful translation
+                        if (!chunkResult || chunkResult.length === 0) {
+                            throw new Error("Empty translation result");
+                        }
+
+                        // Check if translation contains too much original text (possible failure)
+                        // If more than 50% of the original text appears unchanged, retry
+                        const originalWords = chunk.split(/\s+/).length;
+                        let unchangedWords = 0;
+                        const sampleWords = chunk.split(/\s+/).slice(0, 10); // Check first 10 words
+                        for (const word of sampleWords) {
+                            if (word.length > 3 && chunkResult.includes(word)) {
+                                unchangedWords++;
+                            }
+                        }
+                        if (unchangedWords > 5 && attempt < retries - 1) {
+                            throw new Error(`Translation may have failed (too much original text preserved)`);
+                        }
+
+                        // If we got here, translation succeeded
+                        break;
+                    } catch (error) {
+                        lastError = error as Error;
+                        console.warn(`Translation attempt ${attempt + 1} failed for chunk ${i + 1}/${chunks.length}:`, error);
+
+                        if (attempt < retries - 1) {
+                            // Wait before retry (exponential backoff)
+                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                        } else {
+                            // Last attempt failed, use original text as fallback
+                            console.error(`All translation attempts failed for chunk ${i + 1}, using original text`);
+                            chunkResult = chunk;
+                        }
+                    }
+                }
+
                 // Unmask the chunk immediately for display
-                // Note: This might be risky if a mask placeholder is split across chunks, 
-                // but since we mask *before* splitting by paragraph, and placeholders are small tokens,
-                // and we split by \n\n, it is unlikely a placeholder __CODE_BLOCK_X__ gets split 
-                // unless a paragraph is huge and forced split (which we don't do, we just append).
-                // Actually we assume placeholders stay intact.
-                
                 chunkResult = masker.unmask(chunkResult);
 
                 // Update total content
