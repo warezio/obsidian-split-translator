@@ -86,8 +86,17 @@ var TranslationView = class extends import_obsidian2.ItemView {
   async onOpen() {
     const container = this.contentEl;
     container.empty();
-    container.createEl("h4", { text: "Translation" });
-    this.contentElWrapper = container.createDiv({ cls: "translator-content" });
+    container.addClass("markdown-preview-view");
+    container.addClass("markdown-rendered");
+    const headerEl = container.createDiv({ cls: "mod-header mod-ui" });
+    const titleEl = headerEl.createDiv({ cls: "inline-title" });
+    titleEl.setText("Translation");
+    titleEl.setAttr("contenteditable", "true");
+    titleEl.setAttr("spellcheck", "true");
+    titleEl.setAttr("autocapitalize", "on");
+    titleEl.setAttr("tabindex", "-1");
+    titleEl.setAttr("enterkeyhint", "done");
+    this.contentElWrapper = container.createDiv({ cls: "markdown-preview-sizer" });
   }
   async onClose() {
   }
@@ -134,16 +143,33 @@ var TranslationView = class extends import_obsidian2.ItemView {
     this.content = content;
     if (!this.contentElWrapper) {
       const container = this.contentEl;
-      this.contentElWrapper = container.createDiv({ cls: "translator-content" });
+      container.empty();
+      container.addClass("markdown-preview-view");
+      container.addClass("markdown-rendered");
+      const headerEl = container.createDiv({ cls: "mod-header mod-ui" });
+      const titleEl = headerEl.createDiv({ cls: "inline-title" });
+      titleEl.setText("Translation");
+      titleEl.setAttr("contenteditable", "true");
+      titleEl.setAttr("spellcheck", "true");
+      titleEl.setAttr("autocapitalize", "on");
+      titleEl.setAttr("tabindex", "-1");
+      titleEl.setAttr("enterkeyhint", "done");
+      this.contentElWrapper = container.createDiv({ cls: "markdown-preview-sizer" });
     }
     this.contentElWrapper.empty();
-    await import_obsidian2.MarkdownRenderer.render(
-      this.app,
-      content,
-      this.contentElWrapper,
-      "/",
-      this
-    );
+    const pusher = this.contentElWrapper.createDiv({ cls: "markdown-preview-pusher" });
+    pusher.style.height = "0.1px";
+    pusher.style.marginBottom = "0px";
+    pusher.style.width = "1px";
+    if (this.contentElWrapper) {
+      await import_obsidian2.MarkdownRenderer.render(
+        this.app,
+        content,
+        this.contentElWrapper,
+        "/",
+        this
+      );
+    }
   }
 };
 
@@ -199,9 +225,13 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
   }
   addHeaderButton(view) {
     if (view.containerEl.querySelector(".translator-header-button")) return;
-    const button = view.addAction("languages", "Translate current note", () => {
-      this.translateCurrentNote();
-    });
+    const button = view.addAction(
+      "languages",
+      "Translate current note",
+      () => {
+        this.translateCurrentNote();
+      }
+    );
     button.addClass("translator-header-button");
   }
   async translateCurrentNote() {
@@ -239,7 +269,7 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
     }
   }
   async streamTranslation(text, view) {
-    const CHUNK_SIZE = 5e3;
+    const CHUNK_SIZE = 3e3;
     const masker = new MarkdownMasker();
     const maskedText = masker.mask(text);
     const paragraphs = maskedText.split("\n\n");
@@ -262,9 +292,54 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
     let accumulatedTranslation = "";
     try {
       for (let i = 0; i < chunks.length; i++) {
-        let chunkResult = await this.callGoogleTranslate(chunks[i]);
+        const chunk = chunks[i];
+        let chunkResult = "";
+        let retries = 3;
+        let lastError = null;
+        for (let attempt = 0; attempt < retries; attempt++) {
+          try {
+            chunkResult = await this.callGoogleTranslate(chunk);
+            if (!chunkResult || chunkResult.length === 0) {
+              throw new Error("Empty translation result");
+            }
+            const originalWords = chunk.split(/\s+/).length;
+            let unchangedWords = 0;
+            const sampleWords = chunk.split(/\s+/).slice(0, 10);
+            for (const word of sampleWords) {
+              if (word.length > 3 && chunkResult.includes(word)) {
+                unchangedWords++;
+              }
+            }
+            if (unchangedWords > 5 && attempt < retries - 1) {
+              throw new Error(
+                `Translation may have failed (too much original text preserved)`
+              );
+            }
+            break;
+          } catch (error) {
+            lastError = error;
+            console.warn(
+              `Translation attempt ${attempt + 1} failed for chunk ${i + 1}/${chunks.length}:`,
+              error
+            );
+            if (attempt < retries - 1) {
+              await new Promise(
+                (resolve) => setTimeout(
+                  resolve,
+                  Math.pow(2, attempt) * 1e3
+                )
+              );
+            } else {
+              console.error(
+                `All translation attempts failed for chunk ${i + 1}, using original text`
+              );
+              chunkResult = chunk;
+            }
+          }
+        }
         chunkResult = masker.unmask(chunkResult);
-        if (accumulatedTranslation.length > 0) accumulatedTranslation += "\n\n";
+        if (accumulatedTranslation.length > 0)
+          accumulatedTranslation += "\n\n";
         accumulatedTranslation += chunkResult;
         view.update(accumulatedTranslation);
       }
@@ -296,7 +371,9 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
   syncScroll(targetView) {
     const activeView = this.app.workspace.getActiveViewOfType(import_obsidian3.MarkdownView);
     if (!activeView) return;
-    const editorScrollDom = activeView.contentEl.querySelector(".cm-scroller");
+    const editorScrollDom = activeView.contentEl.querySelector(
+      ".cm-scroller"
+    );
     const targetScrollDom = targetView.contentEl;
     if (editorScrollDom && targetScrollDom) {
       const handleScroll = () => {
@@ -323,7 +400,9 @@ var SplitTranslatorPlugin = class extends import_obsidian3.Plugin {
         }
       });
       if (response.status !== 200) {
-        throw new Error(`Google API returned status ${response.status}`);
+        throw new Error(
+          `Google API returned status ${response.status}`
+        );
       }
       const data = response.json;
       if (Array.isArray(data) && Array.isArray(data[0])) {
@@ -374,12 +453,15 @@ var MarkdownMasker = class {
     return text;
   }
   unmask(text) {
-    return text.replace(/__(CODE_BLOCK|INLINE_CODE)_(\d+)__/g, (match, type, index) => {
-      const idx = parseInt(index);
-      if (idx >= 0 && idx < this.replacements.length) {
-        return this.replacements[idx];
+    return text.replace(
+      /__(CODE_BLOCK|INLINE_CODE)_(\d+)__/g,
+      (match, type, index) => {
+        const idx = parseInt(index);
+        if (idx >= 0 && idx < this.replacements.length) {
+          return this.replacements[idx];
+        }
+        return match;
       }
-      return match;
-    });
+    );
   }
 };

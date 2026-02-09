@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
 const isWatch = process.argv.includes("--watch");
@@ -14,12 +14,22 @@ const config = {
     sourcemap: isDebug ? "inline" : false,
 };
 
+const buildStyles = async (minify) => {
+    const css = readFileSync("src/styles.css", "utf8");
+    const transformed = await esbuild.transform(css, {
+        loader: "css",
+        minify,
+    });
+    writeFileSync("styles.css", transformed.code);
+};
+
 if (isWatch) {
     const ctx = await esbuild.context({
         ...config,
         sourcemap: "inline",
     });
     await ctx.watch();
+    await buildStyles(false);
     console.log("[watch] Build started...");
 } else {
     const result = await esbuild.build({
@@ -48,4 +58,6 @@ if (isWatch) {
         }
         writeFileSync("main.js", code);
     }
+
+    await buildStyles(!isDebug);
 }

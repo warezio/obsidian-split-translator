@@ -26,10 +26,23 @@ export class TranslationView extends ItemView {
     async onOpen() {
         const container = this.contentEl;
         container.empty();
-        container.createEl("h4", { text: "Translation" });
-        
-        // Create a dedicated content wrapper
-        this.contentElWrapper = container.createDiv({ cls: "translator-content" });
+
+        // Add markdown-preview-view class for consistent rendering
+        container.addClass("markdown-preview-view");
+        container.addClass("markdown-rendered");
+
+        // Create header container with inline title (like Obsidian's default view)
+        const headerEl = container.createDiv({ cls: "mod-header mod-ui" });
+        const titleEl = headerEl.createDiv({ cls: "inline-title" });
+        titleEl.setText("Translation");
+        titleEl.setAttr("contenteditable", "true");
+        titleEl.setAttr("spellcheck", "true");
+        titleEl.setAttr("autocapitalize", "on");
+        titleEl.setAttr("tabindex", "-1");
+        titleEl.setAttr("enterkeyhint", "done");
+
+        // Create a dedicated content wrapper with Obsidian's preview classes
+        this.contentElWrapper = container.createDiv({ cls: "markdown-preview-sizer" });
     }
 
     async onClose() {
@@ -85,21 +98,44 @@ export class TranslationView extends ItemView {
 
     async update(content: string) {
         this.content = content;
-        
+
         if (!this.contentElWrapper) {
-             const container = this.contentEl;
-             this.contentElWrapper = container.createDiv({ cls: "translator-content" });
+            const container = this.contentEl;
+            container.empty();
+            container.addClass("markdown-preview-view");
+            container.addClass("markdown-rendered");
+
+            // Create header container with inline title (like Obsidian's default view)
+            const headerEl = container.createDiv({ cls: "mod-header mod-ui" });
+            const titleEl = headerEl.createDiv({ cls: "inline-title" });
+            titleEl.setText("Translation");
+            titleEl.setAttr("contenteditable", "true");
+            titleEl.setAttr("spellcheck", "true");
+            titleEl.setAttr("autocapitalize", "on");
+            titleEl.setAttr("tabindex", "-1");
+            titleEl.setAttr("enterkeyhint", "done");
+
+            // Create a dedicated content wrapper with Obsidian's preview classes
+            this.contentElWrapper = container.createDiv({ cls: "markdown-preview-sizer" });
         }
 
         this.contentElWrapper.empty();
-        
-        // Render Markdown
-        await MarkdownRenderer.render(
-            this.app,
-            content,
-            this.contentElWrapper,
-            "/",
-            this
-        );
+
+        // Create a pusher element for proper Obsidian markdown rendering
+        const pusher = this.contentElWrapper.createDiv({ cls: "markdown-preview-pusher" });
+        pusher.style.height = "0.1px";
+        pusher.style.marginBottom = "0px";
+        pusher.style.width = "1px";
+
+        // Render Markdown after the pusher
+        if (this.contentElWrapper) {
+            await MarkdownRenderer.render(
+                this.app,
+                content,
+                this.contentElWrapper,
+                "/",
+                this
+            );
+        }
     }
 }
