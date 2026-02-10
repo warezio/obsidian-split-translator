@@ -51,10 +51,6 @@
     margin-bottom: 0px;
 }
 
-.markdown-preview-sizer > :nth-child(2) {
-    margin-top: 0;
-}
-
 .translator-content {
     user-select: text;
     -webkit-user-select: text;
