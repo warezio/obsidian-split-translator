@@ -1,6 +1,6 @@
 {
     "name": "obsidian-split-translator",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Translate Obsidian notes using Google Translate (unofficial)",
     "main": "main.js",
     "scripts": {
