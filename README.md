@@ -1,3 +1,7 @@
+---
+feature: thumbnails/external/f5de8e2401879b69abcd8c96e119905d.svg
+thumbnail: thumbnails/external/f5de8e2401879b69abcd8c96e119905d.svg
+---
 # Split Translator
 
 > Translate your Obsidian notes in a split pane with original and translated text displayed side-by-side.
