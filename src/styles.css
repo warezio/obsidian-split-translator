@@ -32,13 +32,25 @@
     padding: max(var(--safe-area-inset-bottom), var(--size-4-8)) !important;
 }
 
+.workspace-leaf-content[data-type="translator-view"] .view-content .mod-header {
+    max-width: var(--file-line-width);
+    margin: 0 auto;
+}
+
 .view-content.translator-view {
     overflow-y: auto;
 }
 
-.markdown-preview-sizer {
+.workspace-leaf-content[data-type="translator-view"] .markdown-preview-sizer {
+    max-width: var(--file-line-width);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
     padding-bottom: 606px;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .workspace-leaf-content[data-type="translator-view"] .view-content:has(.translator-loading) .markdown-preview-sizer {
